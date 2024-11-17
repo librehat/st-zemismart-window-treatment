@@ -1,4 +1,4 @@
--- Zemismart Window Treatment ver 0.0.1
+-- Zemismart Window Treatment
 -- Copyright 2024 Simeon Huang (librehat)
 --
 -- This edge driver is based on a more generic one from iquix's ST-Edge-Driver and code
@@ -144,6 +144,10 @@ end
 
 ------------Lifecycle Handlers--------------
 
+local function device_added(driver, device)
+  device:emit_event(capabilities.windowShade.supportedWindowShadeCommands({"open", "close", "pause"}))
+end
+
 local function device_init(driver, device)
   log.info("current level", get_current_level(device))
   log.info("current battery", get_current_battery(device))
@@ -231,6 +235,7 @@ local zemismart_window_treatment_driver = {
     }
   },
   lifecycle_handlers = {
+    added = device_added,
     init = device_init,
     infoChanged = device_info_changed
   }
