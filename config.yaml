@@ -1,0 +1,6 @@
+name: "Zemismart Window Treatment"
+packageKey: "zemismart-window-treatment"
+description: "Configuration for Zemismart ZigBee window treatment devices"
+permissions:
+  zigbee: {}
+

@@ -1,0 +1,32 @@
+name: zemismart-window-treatment
+components:
+- id: main
+  capabilities:
+  - id: windowShade
+    version: 1
+  - id: windowShadeLevel
+    version: 1
+  - id: windowShadePreset
+    version: 1
+  - id: battery
+    version: 1
+  categories:
+  - name: Blind
+preferences:
+  - preferenceId: reverse
+    description: "Reverse the direction of open/close"
+    explicit: true
+  - preferenceId: presetPosition
+    explicit: true
+  - name: limitUp
+    title: "Upper Limit"
+    preferenceType: boolean
+    description: "Toggle to set or unset the upper limit"
+    required: true
+    default: false
+  - name: limitDown
+    title: "Lower Limit"
+    preferenceType: boolean
+    required: true
+    default: false
+    description: "Toggle to set or unset the lower limit"
