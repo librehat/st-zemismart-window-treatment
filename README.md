@@ -5,8 +5,8 @@ SmartThings Edge Driver for Zemismart Window Treatment Devices (ZigBee)
 
 Use at your own risk. Click the channel name link to enroll.
 
-| Channel Name | Channel ID | Description | Invitation Link |
-|--------------|------------|-------------|-----------------|
+| Channel Name | Channel ID | Description |
+|--------------|------------|-------------|
 | [librehat-public](https://bestow-regional.api.smartthings.com/invite/1J2QPa0e8LM0) | `6447c463-063e-42cc-bc38-74cb4251be4f` | Channel for public testing     |
 | librehat-test   | `43941052-b857-4679-9f89-8978e12efb59` | Development channel (unstable). Not open to enroll at the moment. |
 
