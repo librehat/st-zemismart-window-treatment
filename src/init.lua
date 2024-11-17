@@ -92,14 +92,13 @@ local function level_event_moving(device, level)
 end
 
 local function level_event_arrived(device, level)
-  local window_shade_val
   if type(level) ~= "number" or (level < 0 or level > 100) then
     log.error("Invalid level", level)
-    window_shade_val = "unknown"
-    level = 50
+    device:emit_event(capabilities.windowShade.windowShade.unknown())
     return
   end
 
+  local window_shade_val
   if level == 0 then
     window_shade_val = "closed"
   elseif level == 100 then 
@@ -146,8 +145,8 @@ end
 ------------Lifecycle Handlers--------------
 
 local function device_init(driver, device)
-  log.info(string.format("current level=%d", get_current_level(device)))
-  log.info(string.format("current battery=%d", get_current_battery(device)))
+  log.info("current level", get_current_level(device))
+  log.info("current battery", get_current_battery(device))
 end
 
 local function device_info_changed(driver, device, event, args)
@@ -160,7 +159,11 @@ local function device_info_changed(driver, device, event, args)
   if args.old_st_store.preferences.limitDown ~= device.preferences.limitDown then
     set_limit(device, device.preferences.limitDown, "down")
   end
-  level_event_arrived(device, 100 - get_current_level(device))
+
+  local current_level = get_current_level(device)
+  if current_level ~= nil then
+    level_event_arrived(device, 100 - current_level)
+  end
 end
 
 -----------Tuya Cluster Functions-----------
