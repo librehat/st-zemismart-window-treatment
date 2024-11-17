@@ -23,10 +23,12 @@ preferences:
     preferenceType: boolean
     description: "Toggle to set or unset the upper limit"
     required: true
-    default: false
+    definition:
+      default: false
   - name: limitDown
     title: "Lower Limit"
     preferenceType: boolean
-    required: true
-    default: false
     description: "Toggle to set or unset the lower limit"
+    required: true
+    definition:
+      default: false
