@@ -157,17 +157,16 @@ end
 local function device_info_changed(driver, device, event, args)
   if args.old_st_store.preferences.reverse ~= device.preferences.reverse then
     send_tuya_command(device, "\x05", DP_TYPE_ENUM, device.preferences.reverse and "\x01" or "\x00")
+    local current_level = get_current_level(device)
+    if current_level ~= nil then
+      level_event_arrived(device, 100 - current_level)
+    end
   end
   if args.old_st_store.preferences.limitUp ~= device.preferences.limitUp then
     set_limit(device, device.preferences.limitUp, "up")
   end
   if args.old_st_store.preferences.limitDown ~= device.preferences.limitDown then
     set_limit(device, device.preferences.limitDown, "down")
-  end
-
-  local current_level = get_current_level(device)
-  if current_level ~= nil then
-    level_event_arrived(device, 100 - current_level)
   end
 end
 
