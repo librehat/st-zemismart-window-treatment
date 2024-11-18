@@ -30,7 +30,6 @@ local log = require "log"
 
 local CLUSTER_TUYA = 0xEF00
 local SET_DATA = 0x00
-local DP_TYPE_BOOL = "\x01"
 local DP_TYPE_VALUE = "\x02"
 local DP_TYPE_ENUM = "\x04"
 
@@ -38,7 +37,10 @@ local packet_id = 0
 
 ----------Tuya Utility Functions-----------
 
-local function send_tuya_command(device, dp, dp_type, fncmd) 
+local function send_tuya_command(device, dp, dp_type, fncmd)
+  local fncmd_len = string.len(fncmd)
+  log.debug(string.format("send tuya command dp=%d, fncmd=%s", string.byte(dp), string.unpack(">I"..fncmd_len, fncmd)))
+
   local header_args = {
     cmd = data_types.ZCLCommandId(SET_DATA)
   }
@@ -53,7 +55,6 @@ local function send_tuya_command(device, dp, dp_type, fncmd)
     CLUSTER_TUYA
   )
   packet_id = (packet_id + 1) % 65536
-  local fncmd_len = string.len(fncmd)
   local payload_body = generic_body.GenericBody(string.pack(">I2", packet_id) .. dp .. dp_type .. string.pack(">I2", fncmd_len) .. fncmd)
   local message_body = zcl_messages.ZclMessageBody({
     zcl_header = zclh,
@@ -136,9 +137,9 @@ end
 local function set_limit(device, is_set, direction)
   if (direction == "up" and device.preferences.reverse ~= true) or (direction == "down" and device.preferences.reverse == true) then
     -- set upper border/limit (upper becomes lower if 'reverse' is switched on)
-    send_tuya_command(device, "\10", DP_TYPE_BOOL, is_set and "\x00" or "\x02")
+    send_tuya_command(device, "\x10", DP_TYPE_ENUM, is_set and "\x00" or "\x02")
   else
-    send_tuya_command(device, "\10", DP_TYPE_BOOL, is_set and "\x01" or "\x03")
+    send_tuya_command(device, "\x10", DP_TYPE_ENUM, is_set and "\x01" or "\x03")
   end
 end
 
@@ -177,7 +178,7 @@ local function tuya_cluster_handler(driver, device, zb_rx)
   local dp = string.byte(rx:sub(3,3))
   local fncmd_len = string.unpack(">I2", rx:sub(5,6))
   local fncmd = string.unpack(">I"..fncmd_len, rx:sub(7))
-  log.debug(string.format("dp=%d, fncmd=%d", dp, fncmd))
+  log.trace(string.format("dp=%d, fncmd=%d", dp, fncmd))
   if dp == 1 then -- 0x01: Control -- open / pause / close
     -- fncmd: 0: open, 1: pause, 2: close
     if fncmd == 1 then
@@ -197,10 +198,12 @@ local function tuya_cluster_handler(driver, device, zb_rx)
     log.error("motor fault, not implemented yet") -- TODO
   elseif dp == 13 then -- 0x0d: Battery level
     device:emit_event(capabilities.battery.battery(fncmd))
+  elseif dp == 16 then -- 0x10: Border
+    log.debug(string.format("border command=%d", fncmd))
   elseif dp == 20 then -- click control (single motor steps)
     log.debug("click control received, not implemented yet") -- TODO
   else
-    log.warn(string.format("unhandled dp=%d", dp))
+    log.warn(string.format("unhandled dp=%d, fncmd=%d", dp, fncmd))
   end
 end
 
