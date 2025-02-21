@@ -24,3 +24,8 @@ zigbeeManufacturer:
     manufacturer: _TZE200_eevqq1uv
     model: TS0601
     deviceProfileName: zemismart-window-treatment
+  - id: _TZE200_9p5xmj5r/TS0601
+    deviceLabel: Zemismart Window Treatment
+    manufacturer: _TZE200_9p5xmj5r
+    model: TS0601
+    deviceProfileName: zemismart-window-treatment
