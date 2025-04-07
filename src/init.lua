@@ -35,6 +35,11 @@ local DP_TYPE_ENUM = "\x04"
 
 local packet_id = 0
 
+----------Device-specific Quirks-----------
+local DEVICES_LEVEL_INVERTED_IN_REVERSE = {
+  ["_TZE200_9p5xmj5r"] = true,
+}
+
 ----------Tuya Utility Functions-----------
 
 local function send_tuya_command(device, dp, dp_type, fncmd)
@@ -190,6 +195,9 @@ local function tuya_cluster_handler(driver, device, zb_rx)
   elseif dp == 2 then -- 0x02: Percent control -- Started moving to position (triggered from Zigbee)
     level_event_moving(device, fncmd)
   elseif dp == 3 then -- 0x03: Percent state -- Arrived at position
+    if device.preferences.reverse and DEVICES_LEVEL_INVERTED_IN_REVERSE[device:get_manufacturer()] then
+      fncmd = 100 - fncmd
+    end
     level_event_arrived(device, fncmd)
   elseif dp == 5 then -- 0x05: Direction state
     log.info("direction state of the motor is "..(fncmd and "reverse" or "forward"))
